@@ -1,6 +1,8 @@
 const User = require('../models/User')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const download = require('image-downloader')
+const path = require('path')
 
 exports.getAllUsers = async(req,res)=>{
     try {
@@ -68,4 +70,14 @@ exports.userProfile = async(req,res)=>{
 
 exports.userLogout = async(req,res)=>{
     res.cookie('token' , '').json(true);
+}
+
+exports.uploadImage = async(req,res)=>{
+    const { link } = req.body
+    const newName = 'photo' + Date.now() + '.jpg'
+    await download.image({
+       url:link,
+         dest: path.join(__dirname , `../uploads/${newName}`)
+    })
+    res.json(newName)
 }

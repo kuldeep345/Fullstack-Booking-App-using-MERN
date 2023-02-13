@@ -17,6 +17,7 @@ const LoginPage = () => {
   const navigate = useNavigate()
    const { setUser } = useContext(UserContext)
 
+
   return (
     <div className='mt-4 grow flex items-center justify-around'>
       <div className='-mt-32'>
@@ -42,7 +43,8 @@ const LoginPage = () => {
 
           >
             {({ values ,handleBlur , handleChange ,  handleSubmit , isValid , errors , touched })=>{
-          return (<form className='max-w-md mx-auto' onSubmit={handleSubmit}>
+          return (
+          <form className='max-w-md mx-auto' onSubmit={handleSubmit}>
           <input type="email" name="email" placeholder='your@gmail.com' onBlur={handleBlur} value={values.email} onChange={handleChange} style={{borderColor: (errors.email && touched.email) ? 'red' : 'inherit'}}/>
           {(errors.email && touched.email) && <div className='flex gap-2 -mt-2 text-red-600 items-center '>
             <span><XMarkIcon className='h-4'/></span>

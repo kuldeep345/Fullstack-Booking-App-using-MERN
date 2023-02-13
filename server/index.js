@@ -7,10 +7,11 @@ const cookieParser = require('cookie-parser')
 
 app.use(express.json())
 app.use(cookieParser())
+app.use('/uploads' , express.static(__dirname + '/uploads'))
 app.use(cors({
     credentials:true,
     origin:"http://localhost:3000"
-}))
+}))  
 
 app.use('/user' , require('./routes/user'))
 
