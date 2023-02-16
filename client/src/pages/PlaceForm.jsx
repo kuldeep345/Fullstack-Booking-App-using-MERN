@@ -77,17 +77,30 @@ const PlaceForm = () => {
             extraInfo: res.extraInfo,
             checkIn: res.checkIn,
             checkOut: res.checkOut,
+            price:res.price,
             maxGuests: res.maxGuests
         }}
         enableReinitialize={true} 
         validationSchema={schema}
         onSubmit={async(values, {resetForm})=>{
-         await axios.post('/user/places' , {...values , perks , addedPhotos})
-         navigate('/account/places')
-         resetForm({values:""})
-         setPerks([])
-         setAddedPhotos([])
-         setPhoto(null)
+            if(id){
+        
+             await axios.put('/user/places', {...values, id , perks , addedPhotos})
+                navigate('/account/places')
+                resetForm({values:""})
+                setPerks([])
+                setAddedPhotos([])
+                setPhoto(null)
+            }
+            else{
+                await axios.post('/user/places' , {...values , perks , addedPhotos})
+                navigate('/account/places')
+                resetForm({values:""})
+                setPerks([])
+                setAddedPhotos([])
+                setPhoto(null)
+            }
+      
             
         }}
     >
@@ -110,7 +123,7 @@ const PlaceForm = () => {
                 <textarea name="extraInfo" onChange={handleChange} onBlur={handleBlur} value={values.extraInfo}/>
                 {preInput('Check in&out times, max guests' , 'add check in and out times, remember to have some time window for cleaning the room between guests')}
                 {preInput('' , 'house rules, etc')}
-                <div className='grid gap-8 sm:grid-cols-3'>
+                <div className='grid gap-2 grid-cols-2 md:grid-cols-4'>
                     <div className='mt-2 -mb-1'>
                         <h3>Check in time</h3>
                         <input type="number" name="checkIn" onChange={handleChange} onBlur={handleBlur} value={values.checkIn} />
@@ -122,6 +135,10 @@ const PlaceForm = () => {
                     <div className='mt-2 -mb-1'>
                         <h3>Max number of guests</h3>
                         <input type="number" name="maxGuests" onChange={handleChange} onBlur={handleBlur} value={values.maxGuests} />
+                    </div>
+                    <div className='mt-2 -mb-1'>
+                        <h3>Price per night</h3>
+                        <input type="number" name="price" onChange={handleChange} onBlur={handleBlur} value={values.price} />
                     </div>
                 </div>
                 <button type='submit' className='primary my-4'>Save</button>

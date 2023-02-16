@@ -1,9 +1,9 @@
 import {useContext} from 'react'
 import { UserContext } from '../context/UserContext'
-import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import PlacesPage from './PlacesPage'
-import { UserIcon , ListBulletIcon , HomeModernIcon } from '@heroicons/react/24/outline'
+import AccountNav from '../components/AccountNav'
 
 const Account = () => {
     const {ready , user , setUser } = useContext(UserContext)
@@ -23,33 +23,11 @@ const Account = () => {
         return <Navigate to={'/login'} />
     }
 
-    function linkClasses(type=null){
-        let classes = 'inline-flex gap-1 p-2 px-6 rounded-full '
-        if(type === subpage ){
-            classes += 'bg-primary text-white '
-        }
-        else{
-            classes += 'bg-gray-200'
-        }
-        return classes
-    }
+ 
 
   return (
     <div>
-        <nav className='w-full flex justify-center mt-8 gap-2 mb-8'>
-            <Link className={linkClasses('account')} to={'/account'}>
-                <UserIcon className='h-5 m-auto'/>
-                My profile
-            </Link>
-            <Link className={linkClasses('bookings')} to={'/account/bookings'}>
-                <ListBulletIcon className='h-6 m-auto'/>
-                My Bookings
-                </Link>
-            <Link className={linkClasses('places')} to={'/account/places'}>
-                <HomeModernIcon className='h-6 m-auto'/>
-                My accomodations
-            </Link>
-        </nav>
+        <AccountNav/>
         {subpage === 'account' && (
             <div className='text-center max-w-lg mx-auto'>
                 Logged in as {user?.name} ({user?.email}) <br/>

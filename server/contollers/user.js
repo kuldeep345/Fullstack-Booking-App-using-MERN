@@ -1,5 +1,6 @@
 const User = require('../models/User')
 const Place = require('../models/Place')
+const Booking = require('../models/Booking')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const download = require('image-downloader')
@@ -100,7 +101,7 @@ exports.uploadPhoto = async(req,res)=>{
 exports.addNewPlace = async(req,res)=>{
     try {
     const { token } = req.cookies;
-    const { title , address , addedPhotos , description , perks , extraInfo , checkIn , checkOut , maxGuests } = req.body
+    const { title , address , addedPhotos , description , perks , extraInfo , checkIn , checkOut , maxGuests, price } = req.body
     await jwt.verify(token , process.env.JWT_SECRET , {} , async(err , userData) => {
         const place = await new Place({
             owner:userData.id,
@@ -112,7 +113,8 @@ exports.addNewPlace = async(req,res)=>{
             extraInfo,
             checkIn,
             checkOut,
-            maxGuests
+            maxGuests,
+            price
         })
 
         const newPlace = await place.save()
@@ -144,4 +146,60 @@ exports.getHotelDetails = async(req,res)=>{
     } catch (error) {
         res.status(500).json({error:error.message})
     }
+}
+
+
+exports.updateHotel = async(req,res)=>{
+    try {
+     const {token} = req.cookies;
+     const {id, title , address , addedPhotos , description , perks , extraInfo , checkIn , checkOut , price , maxGuests } = req.body;
+     jwt.verify(token , process.env.JWT_SECRET , {} , async(error , userData) =>{
+        const placeDoc = await Place.findById(id)
+        if(userData.id === placeDoc.owner.toString()){
+            placeDoc.set({
+                title , address , addedPhotos , description , perks , extraInfo , checkIn , checkOut , price , maxGuests
+            })
+            const updatedhotel = await placeDoc.save()
+            res.status(200).json(updatedhotel)
+        }
+     })
+    } catch (error) {
+        res.status(500).json({error:error.message})
+    }
+}
+
+exports.AllPlaces = async(req,res)=>{
+    try {
+        const allplaces = await Place.find()
+        res.status(200).json(allplaces)
+    } catch (error) {
+        res.status(500).json({error:error.message})
+    }
+}
+function getUserDataFromToken(req){
+    return new Promise((resolve , reject) => {
+        jwt.verify(req.cookies.token , process.env.JWT_SECRET , {} , async(err , userData)=>{
+            if(err) throw err;
+            resolve(userData)
+        })
+    })
+}
+
+exports.booking = async(req,res)=>{
+    const userData = await getUserDataFromToken(req)
+    const { place , checkIn , checkOut , numberOfGuests, name , phone } = req.body
+    await Booking.create({
+        place , user:userData.id , checkIn , checkOut , numberOfGuests, name , phone
+    }).then((doc) => {
+        res.json(doc)
+    }).catch((err)=>{
+        throw err;
+    })
+}
+
+exports.bookings = async(req,res)=>{
+    const userData = await getUserDataFromToken(req)
+    console.log(userData)
+    const bookings = await Booking.find({user:userData.id}).populate('place')
+    res.status(200).json(bookings)
 }
